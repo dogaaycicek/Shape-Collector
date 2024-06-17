@@ -1,0 +1,123 @@
+import tkinter as tk
+import random
+
+# color list
+colors = ['snow', 'ghost white', 'white smoke', 'gainsboro', 'floral white', 'old lace',
+          'linen', 'antique white', 'papaya whip', 'blanched almond', 'bisque', 'peach puff',
+          'navajo white', 'lemon chiffon', 'mint cream', 'azure', 'alice blue', 'lavender',
+          'lavender blush', 'misty rose', 'dark slate gray', 'dim gray', 'slate gray',
+          'light slate gray', 'gray', 'light grey', 'midnight blue', 'navy', 'cornflower blue', 'dark slate blue',
+          'slate blue', 'medium slate blue', 'light slate blue', 'medium blue', 'royal blue',  'blue',
+          'dodger blue', 'deep sky blue', 'sky blue', 'light sky blue', 'steel blue', 'light steel blue',
+          'light blue', 'powder blue', 'pale turquoise', 'dark turquoise', 'medium turquoise', 'turquoise',
+          'cyan', 'light cyan', 'cadet blue', 'medium aquamarine', 'aquamarine', 'dark green', 'dark olive green',
+          'dark sea green', 'sea green', 'medium sea green', 'light sea green', 'pale green', 'spring green',
+          'lawn green', 'medium spring green', 'green yellow', 'lime green', 'yellow green',
+          'forest green', 'olive drab', 'dark khaki', 'khaki', 'pale goldenrod', 'light goldenrod yellow',
+          'light yellow', 'yellow', 'gold', 'light goldenrod', 'goldenrod', 'dark goldenrod', 'rosy brown',
+          'indian red', 'saddle brown', 'sandy brown',
+          'dark salmon', 'salmon', 'light salmon', 'orange', 'dark orange',
+          'coral', 'light coral', 'tomato', 'orange red', 'red', 'hot pink', 'deep pink', 'pink', 'light pink',
+          'pale violet red', 'maroon', 'medium violet red', 'violet red',
+          'medium orchid', 'dark orchid', 'dark violet', 'blue violet', 'purple', 'medium purple',
+          'thistle', 'snow2', 'snow3', 'snow4', 'seashell2', 'seashell3', 'seashell4',
+          'antique white2', 'antique white3', 'antique white4', 'bisque2', 'bisque3', 'bisque4', 'peach puff2',
+          'peach puff3', 'peach puff4', 'navajo white2', 'navajo white3', 'navajo white4',
+          'lemon chiffon2', 'lemon chiffon3', 'lemon chiffon4', 'cornsilk2', 'cornsilk3', 'cornsilk4',
+          'ivory2', 'ivory3', 'ivory4', 'honeydew2', 'honeydew3', 'honeydew4', 'lavender blush2', 'lavender blush3',
+          'lavender blush4', 'misty rose2', 'misty rose3', 'misty rose4', 'azure2', 'azure3', 'azure4',
+          'slate blue1', 'slate blue2', 'slate blue3', 'slate blue4', 'royal blue1', 'royal blue2',
+          'royal blue3', 'royal blue4', 'blue2', 'blue4', 'dodger blue2', 'dodger blue3', 'dodger blue4',
+          'steel blue1', 'steel blue2', 'steel blue3', 'steel blue4', 'deep sky blue2', 'deep sky blue3',
+          'deep sky blue4', 'sky blue1', 'sky blue2', 'sky blue3', 'sky blue4', 'light sky blue1', 'light sky blue2',
+          'light sky blue3', 'light sky blue4', 'slate gray1', 'slate gray2', 'slate gray3', 'slate gray4',
+          'light steel blue1', 'light steel blue2', 'light steel blue3', 'light steel blue4',
+          'light blue1', 'light blue2', 'light blue3', 'light blue4', 'light cyan2', 'light cyan3', 'light cyan4',
+          'pale turquoise1', 'pale turquoise2', 'pale turquoise3', 'pale turquoise4', 'cadet blue1', 'cadet blue2',
+          'cadet blue3', 'cadet blue4', 'turquoise1', 'turquoise2', 'turquoise3', 'turquoise4', 'cyan2', 'cyan3',
+          'cyan4', 'dark red', 'deep pink2', 'deep pink3', 'deep pink4', 'hot pink1', 'hot pink2', 'hot pink3',
+          'hot pink4', 'pink1', 'pink2', 'pink3', 'pink4', 'light pink1', 'light pink2', 'light pink3', 'light pink4',
+          'pale violet red1', 'pale violet red2', 'pale violet red3', 'pale violet red4', 'maroon1',
+          'maroon2', 'maroon3', 'maroon4', 'violet red1', 'violet red2', 'violet red3', 'violet red4',
+          'magenta2', 'magenta3', 'magenta4', 'orchid1', 'orchid2', 'orchid3', 'orchid4', 'plum1', 'plum2',
+          'plum3', 'plum4', 'medium orchid1', 'medium orchid2', 'medium orchid3', 'medium orchid4', 'dark orchid1',
+          'dark orchid2', 'dark orchid3', 'dark orchid4', 'purple1', 'purple2', 'purple3', 'purple4',
+          'medium purple1', 'medium purple2', 'medium purple3', 'medium purple4', 'thistle1', 'thistle2',
+          'thistle3', 'thistle4', 'gray1']
+
+
+# move player
+def move_player(event):
+    global player_x, player_y
+    canvas.coords(player, event.x, event.y, event.x + 20, event.y + 20)
+    player_x, player_y = event.x, event.y
+    check_collision()
+
+# blocks
+def create_obstacles():
+    global obstacles
+    number_of_obstacles = random.randint(1, 2)  
+    for obstacle in obstacles:
+        canvas.delete(obstacle)
+    obstacles.clear()
+    for _ in range(number_of_obstacles):
+        x = random.randint(20, 380)
+        y = random.randint(20, 380)
+        size = random.randint(20, 40)
+        obstacle = canvas.create_rectangle(x, y, x + size, y + size, fill='black')
+        obstacles.append(obstacle)
+
+def update_obstacles():
+    create_obstacles()
+    root.after(1000, update_obstacles)  
+
+def check_collision():
+    global shape, score, player_color
+    shape_coords = canvas.coords(shape)
+    player_coords = canvas.coords(player)
+    if abs(player_coords[0] - shape_coords[0]) < 20 and abs(player_coords[1] - shape_coords[1]) < 20:
+        player_color = canvas.itemcget(shape, "fill")
+        canvas.itemconfig(player, fill=player_color)
+        canvas.delete(shape)
+        score += 1
+        score_label.config(text=f"Score: {score}")
+        check_win_condition()
+        create_random_shape()
+    for obstacle in obstacles:
+        obstacle_coords = canvas.coords(obstacle)
+        if abs(player_coords[0] - obstacle_coords[0]) < 20 and abs(player_coords[1] - obstacle_coords[1]) < 20:
+            score -= 1  
+            score_label.config(text=f"Score: {score}")
+
+def check_win_condition():
+    global score
+    if score == 4:
+        win_label = tk.Label(root, text="YOU WIN!", font=("Helvetica", 44), fg="dark orchid3")
+        win_label.pack()
+        canvas.unbind("<Motion>")  
+
+
+root = tk.Tk()
+root.title("Shape Collector Game")
+
+score = 0
+player_color = "royal blue1"
+obstacles = []
+
+canvas = tk.Canvas(root, width=400, height=400)
+canvas.pack()
+
+score_label = tk.Label(root, text=f"Score: {score}", font=("Helvetica", 26))
+score_label.pack()
+
+# player
+player_x, player_y = 200, 200
+player = canvas.create_rectangle(player_x, player_y, player_x + 20, player_y + 20, fill=player_color)
+
+create_random_shape()
+create_obstacles()
+update_obstacles()
+
+canvas.bind("<Motion>", move_player)
+
+root.mainloop()
